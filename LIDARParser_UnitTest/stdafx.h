@@ -7,8 +7,12 @@
 
 #include "targetver.h"
 
+#define NOMINMAX
+#include <windows.h>
+
 #include <stdio.h>
 #include <tchar.h>
+#include <cassert>
 
 
 

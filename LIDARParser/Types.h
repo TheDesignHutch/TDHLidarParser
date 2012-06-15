@@ -1,6 +1,7 @@
 #ifndef LIDARPARSER_TYPES_H
 #define LIDARPARSER_TYPES_H
 
+#define NOMINMAX
 #include <TCHAR.h>
 
 #define USE_TCHAR //< Set this to enable project specific unicode/utf8 build
@@ -41,6 +42,11 @@ namespace LIDAR
 	typedef UInt32 Handle; //'1 base' index where 0 is invalid
 	typedef UInt8 Priority; //Priority value
 
+
+
+	template <class _Type>
+	const _Type& min( const _Type& a, const _Type& b )
+	{ return a < b ? a : b; }
 	
 
 } //END: LIDAR

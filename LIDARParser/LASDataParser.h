@@ -106,36 +106,59 @@ namespace LIDAR
 		class Parser
 		{
 		public:
-			typedef Header Header;
-			typedef PointV0 Point;
 
 			//Bring point types into the parsers namespace
 			typedef PointV0 PointV0;
 			typedef PointV1 PointV1;
 			typedef PointV2 PointV2;
 			typedef PointV3 PointV3;
+
+			typedef Header Header;
+			typedef PointV3 Point;
 		public:		
 			Parser() {}
 			~Parser() {}
 
-			const Header* getHeader( DataSource& dataSource );
-			const Point* getPoint( DataSource& dataSource );
+			bool readHeader( DataSource& dataSource );
 
+			const Header& getHeader() const
+			{ return m_header; }
+
+			bool readPoint( DataSource& dataSource, Point* point, Size pointSize );
+			
+			/**
+				\param[in] pointBufferSizeBytes Validation field to ensure that the buffer is the correct size for
+				reading  point records into
+			*/
+			Count readPoints( DataSource& dataSource, Byte* pointBuffer, Count pointBufferCount, Size pointBufferSizeBytes );
+
+			/*
 			inline UInt32 getPointTypeID() const
 			{ return m_header.pointFormatID; }
 
 			inline Size recordSize() const
-			{ return m_pointSize; }	
+			{ return m_header.pointRecordLength; }	
 		
+			inline Count getPointCount() const
+			{ return m_header.numPointRecords; }
+			*/
+
 		private:
 			Header m_header;
-			Size m_pointSize;//< Stored poitn size based on getPointTypeID()
-
+			
 		};
 	
 	} //END: LAS
 
 	typedef LIDARParser< LAS::Parser > LASParser;
+
+	/** LAS Header reader functionality */
+	UInt32 HeaderReader<LAS::Parser>::getPointTypeID() const 
+	{ return pointFormatID; }
+	UInt32 HeaderReader<LAS::Parser>::getPointCount() const 
+	{ return numPointRecords; }
+	UInt32 HeaderReader<LAS::Parser>::getPointSize() const
+	{ return pointRecordLength; }
 
 }; //END: LIDAR
 

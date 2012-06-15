@@ -13,14 +13,15 @@ namespace LIDAR
 	{
 		DataSource_IStream,
 		DataSource_File,
-		DataSource_BufferArray, //, Array of data in memory
+		DataSource_MemoryArray, //, Array of data in memory
 	};
 
 	class DataSource
 	{
 	public:
-		DataSource( IBStream& dataStream, eDataSource sourceType = DataSource_IStream ) :
-			m_dataStream(dataStream) 
+		DataSource( IBStream& dataStream, eDataSource sourceType = DataSource_IStream ) 
+			: m_dataStream(dataStream),
+			m_sourceType( sourceType )
 		{}
 		virtual ~DataSource(){}
 		
@@ -52,13 +53,14 @@ namespace LIDAR
 	{
 	public:
 		FileDataSource( const Char* filename )
-			: DataSource(m_fileStream),
-			m_fileStream(filename) {}
+			: DataSource(m_fileStream, DataSource_File),
+			m_fileStream(filename, std::ios::binary ) {}
 
 	private:
 		IBFStream m_fileStream;
 	};
 	
+	/*
 	class ArrayDataSource : public DataSource
 	{
 	private:
@@ -70,7 +72,7 @@ namespace LIDAR
 
 	public:
 		ArrayDataSource( const Byte* dataArray, Count dataArrayByteCount  )
-			: DataSource( m_memoryStream ),
+			: DataSource( m_memoryStream, DataSource_MemoryArray ),
 			m_memoryBuffer( const_cast<Byte*>(dataArray), const_cast<Byte*>(dataArray) + dataArrayByteCount ),
 			m_memoryStream( &m_memoryBuffer ) 
 		{}
@@ -79,6 +81,7 @@ namespace LIDAR
 		MemoryBuffer m_memoryBuffer;
 		IBStream m_memoryStream;
 	};
+	*/
 
 } //END: LIDAR
 #endif

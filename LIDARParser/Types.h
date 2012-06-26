@@ -45,8 +45,12 @@ namespace LIDAR
 
 
 	template <class _Type>
-	const _Type& min( const _Type& a, const _Type& b )
+	inline const _Type& min( const _Type& a, const _Type& b )
 	{ return a < b ? a : b; }
+	
+	template <class _Type>
+	inline const _Type& max( const _Type& a, const _Type& b )
+	{ return a > b ? a : b; }
 	
 
 } //END: LIDAR

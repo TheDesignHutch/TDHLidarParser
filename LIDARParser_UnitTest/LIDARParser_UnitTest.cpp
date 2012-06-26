@@ -15,7 +15,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//Open the LIDAR source from file
 	// - ALternatively from a memory array or std stream
-	LIDAR::FileDataSource lasSource( _T("./Data/TestData1 - Copy.las") );
+	LIDAR::FileDataSource lasSource( _T("../../LIDARData/LAS/TestData1.las") );
 	if ( !lasSource.valid() )
 		return assert(false), -1;
 

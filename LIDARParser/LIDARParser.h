@@ -34,6 +34,9 @@ namespace LIDAR
 	{
 	public:
 
+		/** Generic point iterator
+			\remarks Use IteratorT for faster type-specific iteration
+		*/
 		class Iterator
 		{
 		public:
@@ -44,7 +47,11 @@ namespace LIDAR
 
 			template< class _Point >
 			operator _Point*()
-			{ return (_Point*)(m_pointData); }
+			{ assert( sizeof(_Point) <= m_pointSize); return (_Point*)(m_pointData); }
+
+			template< class _Point >
+			_Point* as()
+			{ assert( sizeof(_Point) <= m_pointSize); return (_Point*)(m_pointData); }
 
 			inline Iterator& operator ++()
 			{ m_pointData += m_pointSize; return *this; }
@@ -54,9 +61,45 @@ namespace LIDAR
 
 			inline bool operator != ( const Iterator& rhs ) const
 			{ return m_pointData != rhs.m_pointData; }
+
+			
+			Size pointSize() const
+			{ return m_pointSize; }
+			
+			Byte* pointData() const
+			{ return m_pointData; }
 		private:
 			Size m_pointSize;
 			Byte* m_pointData;
+		};
+
+		/** Type specific iterator
+		*/
+		template< class _Point >
+		class IteratorT
+		{
+		public:
+			inline IteratorT( Byte* data, Size pointSize ) 
+				: m_pointData(data)
+			{ assert( sizeof(_Point) == pointSize ); }
+
+			inline IteratorT( const Iterator& it ) 
+				: m_pointData( (_Point*)it.pointData() )
+			{ assert( sizeof(_Point) == it.pointSize() ); }
+
+			operator _Point*()
+			{ return m_pointData; }
+
+			inline IteratorT& operator ++()
+			{ ++m_pointData; return *this; }
+
+			inline IteratorT operator +( Count count )
+			{ return IteratorT(m_pointData+count, sizeof(_Point) ); }
+
+			inline bool operator != ( const IteratorT& rhs ) const
+			{ return m_pointData != rhs.m_pointData; }
+		private:
+			_Point* m_pointData;
 		};
 
 	public:
@@ -128,10 +171,11 @@ namespace LIDAR
 			return (const Header&)( m_dataParser.getHeader() );
 		}
 
-		inline bool readPoint( Point* point, Size pointSize )
+		template< class _Point >
+		inline bool readPoint( _Point* point/*, Size pointSize*/ )
 		{ 
 			assert(m_pointsRemaining);
-			bool ret = m_dataParser.readPoint(m_dataSource, point, pointSize );
+			bool ret = m_dataParser.readPoint(m_dataSource, point, sizeof(*pointSize) );
 			if ( ret ) --m_pointsRemaining;
 			return ret;
 		}
@@ -146,7 +190,7 @@ namespace LIDAR
 
 		//Count readPoints( const Byte* pointBuffer, Size pointBufferSizeBytes )
 		//{ return m_dataParser.readPoints( m_dataSource, pointBuffer, pointBufferSizeBytes ); }
-		
+			
 		inline UInt32 getPointTypeID() const
 		{ return getHeader().getPointTypeID(); }
 		

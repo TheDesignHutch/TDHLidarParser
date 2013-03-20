@@ -3,6 +3,7 @@
 
 #define NOMINMAX
 #include <TCHAR.h>
+#include <cfloat>
 
 #define USE_TCHAR //< Set this to enable project specific unicode/utf8 build
 #ifdef USE_TCHAR
@@ -13,6 +14,16 @@
 
 namespace LIDAR
 {		
+	
+	typedef float Float32; 
+	typedef double Float64; //Long Float32 = double
+
+#if REAL_DOUBLE
+	typedef Float64 Real; //Real
+#else
+	typedef Float32 Real; //Real
+#endif
+
 	typedef char Char8;
 	typedef wchar_t Char16;
 	typedef TCHAR TChar;

@@ -51,7 +51,9 @@ namespace LIDAR
 			LAS Point data type version 0
 		*/
 		struct PointV0
-		{											//Item										Format			Size		Required
+		{
+			enum eTypeID { TypeID = 0 };
+													//Item										Format			Size		Required
 			long			x;						//X											long			4 bytes		*
 			long			y;						//Y											long			4 bytes		*
 			long			z;						//Z											long			4 bytes		*
@@ -73,11 +75,15 @@ namespace LIDAR
 		*/
 		struct PointV1 : PointV0
 		{
+			enum eTypeID { TypeID = 1 };
+
 			double GPSTime; //< GPS Time double 8 bytes
 		};
 
 		struct PointV2 : PointV0
 		{
+			enum eTypeID { TypeID = 2 };
+
 			unsigned short red;
 			unsigned short green;
 			unsigned short blue;
@@ -85,6 +91,8 @@ namespace LIDAR
 
 		struct PointV3 : PointV1
 		{
+			enum eTypeID { TypeID = 3 };
+
 			unsigned short red;
 			unsigned short green;
 			unsigned short blue;
@@ -112,9 +120,9 @@ namespace LIDAR
 			typedef PointV1 PointV1;
 			typedef PointV2 PointV2;
 			typedef PointV3 PointV3;
+			typedef PointV0 Point; //< V0 is the basis of all points so is the default ype of Point for LASParser unless user specified
 
 			typedef Header Header;
-			typedef PointV3 Point;
 		public:		
 			Parser() {}
 			~Parser() {}
@@ -124,7 +132,7 @@ namespace LIDAR
 			const Header& getHeader() const
 			{ return m_header; }
 
-			bool readPoint( DataSource& dataSource, Point* point, Size pointSize );
+			bool readPoint( DataSource& dataSource, Byte* point, Size pointSize );
 			
 			/**
 				\param[in] pointBufferSizeBytes Validation field to ensure that the buffer is the correct size for

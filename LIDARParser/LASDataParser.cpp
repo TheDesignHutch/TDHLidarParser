@@ -50,7 +50,7 @@ namespace LIDAR
 			return true;
 		}
 
-		bool Parser::readPoint( DataSource& dataSource, Point* point, Size pointSize )
+		bool Parser::readPoint( DataSource& dataSource, Byte* point, Size pointSize )
 		{
 			Size readLength = min( pointSize, (Size)m_header.pointRecordLength );
 			//if( m_header.pointRecordLength > pointSize )

@@ -20,7 +20,7 @@
 #ifndef LIDARPARSER_H
 #define LIDARPARSER_H
 
-#include "LIDARParser/Types.h"
+#include "Types.h"
 
 namespace LIDAR
 {	

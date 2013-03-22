@@ -19,16 +19,16 @@
 
 #include "stdafx.h"
 
-#include "LIDARParser/DataSource.h"
-#include "LIDARParser/LIDARParser.h"
-#include "LIDARParser/LASDataParser.h"
+#include "DataSource.h"
+#include "LidarParser.h"
+#include "LASDataParser.h"
 #include <cmath>
 
 
-#define LIDAR_UINT32_TEST 1 //, Test UInt point position bounds which should be [0->UInt32_Max,0->UInt32_Max,0->UInt32_Max]
-#define LIDAR_UINT32_TO_DOUBLE_TEST 1 //< Test double precision bounds which should match header
-#define LIDAR_UINT32_TO_DOUBLE_ACCURACY 1 //< Test of max LIDAR_UINT32_TO_DOUBLE_TEST innacuracy
-#define LIDAR_UINT32_OVERFLOW_TEST 1 //,Check for overflow conditions/errors
+#define LIDARTEST_UNIT_UINT32 1 //, Test UInt32 point position bounds which should be [0->UInt32_Max,0->UInt32_Max,0->UInt32_Max]
+#define LIDARTEST_UNIT_UINT32_TO_DOUBLE 1 //< Test double precision bounds which should match header
+#define LIDARTEST_UNIT_UINT32_TO_DOUBLE_ACCURACY 1 //< Test of max LIDARTEST_UNIT_UINT32_TO_DOUBLE innacuracy - This reports the maximum amount of error that the NormalisedUInt32 conversion creates on each axis
+#define LIDARTEST_UNIT_UINT32_OVERFLOW 1 //,Check for overflow conditions/errors
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -37,9 +37,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//Open the LIDAR source from file
 	// - ALternatively from a memory array or std stream
-	LIDAR::FileDataSource lasSource( _T("../../LIDARData/LAS/TestData1.las") );
+	LIDAR::FileDataSource lasSource( _T("../data/srs.las") );
 	if ( !lasSource.valid() )
-		return assert(false), -1;
+		return assert(false =="Source fiel failed to open or doesn't exist"), -1;
 
 	LIDARParser lasParser( lasSource );
 	if ( !lasParser.readHeader() )
@@ -78,7 +78,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	LIDAR::UInt32 minX = UINT_MAX, minY = UINT_MAX, minZ = UINT_MAX;
 	LIDAR::UInt32 maxX = 0, maxY = 0, maxZ = 0;
 
-#if LIDAR_UINT32_TO_DOUBLE_TEST //< TO double test.. TODO: needs thinking through some adapter type to obtain faster and wihtout the chaf of DIY!
+#if LIDARTEST_UNIT_UINT32_TO_DOUBLE //< TO double test.. TODO: needs thinking through some adapter type to obtain faster and wihtout the chaf of DIY!
 	const LIDAR::Float64 dextentScaleX = dextentX /UINT_MAX;
 	const LIDAR::Float64 dextentScaleY = dextentY /UINT_MAX;
 	const LIDAR::Float64 dextentScaleZ = dextentZ /UINT_MAX;
@@ -86,7 +86,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	LIDAR::Float64 dminX = DBL_MAX, dminY = DBL_MAX, dminZ = DBL_MAX;
 	LIDAR::Float64 dmaxX = -DBL_MAX, dmaxY = -DBL_MAX, dmaxZ = -DBL_MAX;
 
-#if LIDAR_UINT32_TO_DOUBLE_ACCURACY
+#if LIDARTEST_UNIT_UINT32_TO_DOUBLE_ACCURACY
 	LIDAR::Float64 dErrmaxX = 0, dErrmaxY = 0, dErrmaxZ = 0;
 #endif
 #endif		
@@ -120,7 +120,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			LIDAR::UInt32 y = LIDAR::UInt32(point->y - offsetY) * scaleY;
 			LIDAR::UInt32 z = LIDAR::UInt32(point->z - offsetZ) * scaleZ;
 
-#if LIDAR_UINT32_OVERFLOW_TEST
+#if LIDARTEST_UNIT_UINT32_OVERFLOW
 			assert( point->x >= offsetX );
 			assert( point->y >= offsetY );
 			assert( point->z >= offsetZ );
@@ -136,7 +136,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 #endif
 			
-#if LIDAR_UINT32_TEST
+#if LIDARTEST_UNIT_UINT32
 			//UInt32 range validation/test
 			minX = LIDAR::min(x, minX);
 			maxX = LIDAR::max(x, maxX);
@@ -148,7 +148,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			maxZ = LIDAR::max(z, maxZ);
 #endif
 
-#if LIDAR_UINT32_TO_DOUBLE_TEST
+#if LIDARTEST_UNIT_UINT32_TO_DOUBLE
 			//TODO: Not necessarily optimal at present. Currently intended that you woudl store a UInt32 for fast OctTree build etc.
 			LIDAR::Float64 dx = lasHeader.xMin + x * dextentScaleX;
 			LIDAR::Float64 dy = lasHeader.yMin + y * dextentScaleY;
@@ -166,7 +166,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			dminZ = LIDAR::min(dz, dminZ);
 			dmaxZ = LIDAR::max(dz, dmaxZ);
 	
-#if LIDAR_UINT32_TO_DOUBLE_ACCURACY //< Accuracy check
+#if LIDARTEST_UNIT_UINT32_TO_DOUBLE_ACCURACY //< Accuracy check
 			LIDAR::Float64 tdx = point->x * lasHeader.xScale;
 			LIDAR::Float64 tdy = point->y * lasHeader.yScale;
 			LIDAR::Float64 tdz = point->z * lasHeader.zScale;
@@ -244,22 +244,38 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 
 	DWORD end = timeGetTime();
-	printf("Header\n\tscale: %Lf %Lf %Lf \n\toffset: %Lf %Lf %Lf\n",
+	printf("Header Info\n"
+		"\tpoint-count: %u\n"
+		"\tscale: %Lf %Lf %Lf \n"
+		"\toffset: %Lf %Lf %Lf\n"
+		"\tjulian-date: %u\n",
+		lasHeader.getPointCount(),
 		lasHeader.xScale, lasHeader.yScale, lasHeader.zScale, 
-		lasHeader.xOffset, lasHeader.yOffset, lasHeader.zOffset );
+		lasHeader.xOffset, lasHeader.yOffset, lasHeader.zOffset,
+		lasHeader.flightDate );
 	
-	printf("Header\n\tmin: %Lf %Lf %Lf \n\tmax: %Lf %Lf %Lf \n\textent: %Lf %Lf %Lf\n", 
+	printf("Header Extent\n"
+		"\tmin: %Lf %Lf %Lf \n"
+		"\tmax: %Lf %Lf %Lf \n"
+		"\textent: %Lf %Lf %Lf\n", 
 		lasHeader.xMin, lasHeader.yMin, lasHeader.zMin, 
 		lasHeader.xMax, lasHeader.yMax, lasHeader.zMax, 
 		lasHeader.xMax-lasHeader.xMin, lasHeader.yMax-lasHeader.yMin, lasHeader.zMax-lasHeader.zMin );
 
-#if LIDAR_UINT32_TEST
-	printf("Data (limit %u) \n\tmin: %u %u %u \n\tmax: %u %u %u  \n\tmax-offset: %u %u %u\n\textent: %u %u %u\n", 
-		UINT_MAX,
+#if LIDARTEST_UNIT_UINT32
+	printf("Unit-UInt32 extent (limit %u) \n"
+		"\tmin: %u %u %u \n"
+		"\tmax: %u %u %u \n"
+		"\textent: %u %u %u\n",
 		minX, minY, minZ, 
-		maxX, maxY, maxZ, 
-		UINT_MAX-maxX, UINT_MAX-maxY, UINT_MAX-maxZ, 
+		maxX, maxY, maxZ,  
 		maxX-minX, maxY-minY, maxZ-minZ );
+	
+	printf("Unit-UInt32 unused range (%u-max):\n"
+		"\t%u %u %u\n", 
+		UINT_MAX, 
+		UINT_MAX-maxX, UINT_MAX-maxY, UINT_MAX-maxZ );
+
 	//2013-03-20: max-offset 10245 188769 15062
 	int xOff = (0xffffffff-maxX)/scaleX;
 	int yOff = (0xffffffff-maxY)/scaleY;
@@ -267,18 +283,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	assert( xOff==0 && yOff==0 && zOff==0 ); //<TODO: currently fails with test data!
 #endif
 
-#if LIDAR_UINT32_TO_DOUBLE_TEST
-	printf("Data (FLoat64) \n\tmin: %f %f %f \n\tmax: %f %f %f \n\textent: %f %f %f\n",
+#if LIDARTEST_UNIT_UINT32_TO_DOUBLE
+	printf("Float64 extent \n"
+		"\tmin: %f %f %f \n"
+		"\tmax: %f %f %f \n"
+		"\textent: %f %f %f\n",
 		dminX, dminY, dminZ, 
 		dmaxX, dmaxY, dmaxZ, 
 		dmaxX-dminX, dmaxY-dminY, dmaxZ-dminZ );
 
-#if LIDAR_UINT32_TO_DOUBLE_ACCURACY
-	printf(" - Max Error \n\t %f %f %f\n",
+#if LIDARTEST_UNIT_UINT32_TO_DOUBLE_ACCURACY
+	//This reports the maximum amount of error that the Unit-UInt32 conversion creates on each axis
+	printf("Unit-UInt32 max axis error \n"
+		"\t %f %f %f\n",
 		dErrmaxX, dErrmaxY, dErrmaxZ );
-	//ERROR 2013-03-19: 0.000477 199.998477(overflow) 0.000094
-	//2013-03-20: 0.000477 0.008790 0.000094
-	//0.000477 0.007790 0.000094
 #endif
 #endif
 
@@ -286,6 +304,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	assert( remainingPointCount == 0);
 
+	system("pause");
 	return 0;
 }
 

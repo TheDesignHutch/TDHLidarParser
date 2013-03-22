@@ -19,8 +19,13 @@
 #ifndef LIDARPARSER_LASDATAPARSER_H
 #define LIDARPARSER_LASDATAPARSER_H
 
-#include "LIDARParser/Types.h"
-#include "LIDARParser/DataSource.h"
+#include "Types.h"
+#include "DataSource.h"
+
+/**
+LAS specification v1.4:
+<http://asprs.org/a/society/committees/standards/LAS_1_4_r12.pdf>
+*/
 
 namespace LIDAR
 {

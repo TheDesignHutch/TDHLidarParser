@@ -289,7 +289,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\TDHLidarParser.cpp"
+				RelativePath="..\src\LIDARParser.cpp"
 				>
 			</File>
 		</Filter>
@@ -307,7 +307,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\TDHLidarParser.h"
+				RelativePath="..\src\LIDARParser.h"
 				>
 			</File>
 			<File

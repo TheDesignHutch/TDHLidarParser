@@ -19,7 +19,7 @@
 
 #include "StdAfx.h"
 
-#include "LIDARParser.h"
+#include "TDHLidarParser.h"
 #include "LASDataParser.h"
 
 namespace LIDAR

@@ -177,13 +177,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			dErrmaxX = LIDAR::max(dxDiff,dErrmaxX);
 			dErrmaxY = LIDAR::max(dyDiff,dErrmaxY);
 			dErrmaxZ = LIDAR::max(dzDiff,dErrmaxZ);
-
 #endif
 
-
 #endif
-
-
 		}
 		
 		//Perform type specific point retrieval

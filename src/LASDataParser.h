@@ -186,8 +186,10 @@ namespace LIDAR
 	/** LAS Header reader functionality */
 	UInt32 HeaderReader<LAS::Parser>::getPointTypeID() const 
 	{ return pointFormatID; }
+	
 	UInt32 HeaderReader<LAS::Parser>::getPointCount() const 
 	{ return numPointRecords; }
+
 	UInt32 HeaderReader<LAS::Parser>::getPointSize() const
 	{ return pointRecordLength; }
 

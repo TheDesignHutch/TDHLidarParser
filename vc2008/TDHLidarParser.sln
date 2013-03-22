@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LIDARParser", "LIDARParser\LIDARParser.vcproj", "{D621D5E3-2E9C-4AAE-BE22-2F11119F8B84}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TDHLidarParser", "TDHLidarParser.vcproj", "{D621D5E3-2E9C-4AAE-BE22-2F11119F8B84}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LIDARParser_UnitTest", "LIDARParser_UnitTest\LIDARParser_UnitTest.vcproj", "{2C7445EA-8CD0-42BB-B049-A8E315D7AB0C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TDHLidarParser_UnitTest", "TDHLidarParser_UnitTest.vcproj", "{2C7445EA-8CD0-42BB-B049-A8E315D7AB0C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D621D5E3-2E9C-4AAE-BE22-2F11119F8B84} = {D621D5E3-2E9C-4AAE-BE22-2F11119F8B84}
 	EndProjectSection
